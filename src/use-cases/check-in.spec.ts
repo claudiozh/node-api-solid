@@ -3,16 +3,16 @@ import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-c
 import { CheckInUseCase } from '@/use-cases/check-in'
 
 let checkInsRepository: InMemoryCheckInsRepository
-let checkInUseCase: CheckInUseCase
+let sut: CheckInUseCase
 
 describe('Check in Use Case', () => {
   beforeEach(() => {
     checkInsRepository = new InMemoryCheckInsRepository()
-    checkInUseCase = new CheckInUseCase(checkInsRepository)
+    sut = new CheckInUseCase(checkInsRepository)
   })
 
   it('should be able register', async () => {
-    const { checkIn } = await checkInUseCase.execute({
+    const { checkIn } = await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
     })

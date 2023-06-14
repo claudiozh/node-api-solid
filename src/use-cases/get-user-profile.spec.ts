@@ -5,12 +5,12 @@ import { GetUserProfileUseCase } from '@/use-cases/get-user-profile'
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 let usersRepository: InMemoryUsersRepository
-let getUserProfileUseCase: GetUserProfileUseCase
+let sut: GetUserProfileUseCase
 
 describe('Get User Profile Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
-    getUserProfileUseCase = new GetUserProfileUseCase(usersRepository)
+    sut = new GetUserProfileUseCase(usersRepository)
   })
 
   it('should be able to get user profile', async () => {
@@ -20,7 +20,7 @@ describe('Get User Profile Use Case', () => {
       password_hash: await hash('123456', 8),
     })
 
-    const { user } = await getUserProfileUseCase.execute({
+    const { user } = await sut.execute({
       userId: createdUser.id,
     })
 
@@ -29,7 +29,7 @@ describe('Get User Profile Use Case', () => {
 
   it('should not be able to get user profile', async () => {
     await expect(() =>
-      getUserProfileUseCase.execute({
+      sut.execute({
         userId: '123456789',
       }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError)
