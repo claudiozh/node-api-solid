@@ -11,7 +11,7 @@ describe('Check in Use Case', () => {
     sut = new CheckInUseCase(checkInsRepository)
   })
 
-  it('should be able register', async () => {
+  it('should be able to check in', async () => {
     const { checkIn } = await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
