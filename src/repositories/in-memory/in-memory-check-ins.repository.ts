@@ -2,6 +2,7 @@ import { CheckIn, Prisma } from '@prisma/client'
 import { CheckInsRepository } from '@/repositories/check-ins.repository'
 import { randomUUID } from 'node:crypto'
 import dayjs from 'dayjs'
+import { ITEMS_PER_PAGE } from '@/constants/pagination'
 
 export class InMemoryCheckInsRepository implements CheckInsRepository {
   private items: CheckIn[] = []
@@ -40,5 +41,14 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     }
 
     return checkInOnSameDate
+  }
+
+  async findManyByUserId(userId: string, page: number): Promise<CheckIn[]> {
+    const startIndex = (page - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+
+    return this.items
+      .filter((checkIn) => checkIn.user_id === userId)
+      .slice(startIndex, endIndex)
   }
 }
