@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import request from 'supertest'
 import { app } from '@/app'
 
-describe('Profile (e2e)', () => {
+describe('Refresh Token (e2e)', () => {
   beforeAll(async () => {
     app.ready()
   })
@@ -11,7 +11,7 @@ describe('Profile (e2e)', () => {
     app.close()
   })
 
-  it('should be able to get profile', async () => {
+  it('should be able to refresh a token', async () => {
     await request(app.server).post('/users').send({
       name: 'John Doe',
       email: 'johndoea@example.com',
@@ -23,18 +23,17 @@ describe('Profile (e2e)', () => {
       password: '123456',
     })
 
-    const { token } = authResponse.body
+    const cookies = authResponse.get('Set-Cookie')
 
-    const profileResponse = await request(app.server)
-      .get('/me')
-      .set({
-        Authorization: `Bearer ${token}`,
-      })
+    const response = await request(app.server)
+      .post('/token/refresh')
+      .set('Cookie', cookies)
+      .send()
 
-    expect(profileResponse.statusCode).toEqual(200)
-    expect(profileResponse.body.user).toHaveProperty(
-      'email',
-      'johndoea@example.com',
+    expect(response.statusCode).toEqual(200)
+    expect(response.body).toHaveProperty('token', expect.any(String))
+    expect(response.get('Set-Cookie')).toEqual(
+      expect.arrayContaining([expect.stringContaining('refreshToken=')]),
     )
   })
 })
